@@ -1,0 +1,12 @@
+Looking in indexes: https://pypi.org/simple, https://pypi.ngc.nvidia.com
+Requirement already satisfied: setuptools in /WAVE/users2/unix/jkou/.conda/envs/aic24/lib/python3.9/site-packages (60.2.0)
+Collecting setuptools
+  Downloading setuptools-76.0.0-py3-none-any.whl.metadata (6.7 kB)
+Downloading setuptools-76.0.0-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 156.0 MB/s eta 0:00:00
+Installing collected packages: setuptools
+  Attempting uninstall: setuptools
+    Found existing installation: setuptools 60.2.0
+    Uninstalling setuptools-60.2.0:
+      Successfully uninstalled setuptools-60.2.0
+Successfully installed setuptools-76.0.0
