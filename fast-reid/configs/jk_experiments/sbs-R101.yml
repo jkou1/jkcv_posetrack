@@ -1,0 +1,12 @@
+_BASE_: ../Base-SBS.yml
+
+MODEL:
+  BACKBONE:
+    DEPTH: 101x
+
+
+DATASETS:
+  NAMES: ("AIC24",)
+  TESTS: ("AIC24",)
+
+OUTPUT_DIR:  logs/jk_experiments/sbs-R101

@@ -14,7 +14,7 @@ from fastreid.engine import DefaultTrainer, default_argument_parser, default_set
 from fastreid.utils.checkpoint import Checkpointer
 
 # import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = '4,5,6,7' 
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 def setup(args):
     """

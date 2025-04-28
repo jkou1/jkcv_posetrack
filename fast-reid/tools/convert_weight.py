@@ -25,26 +25,28 @@ def setup(args):
     default_setup(cfg, args)
     return cfg
 
+# CHANGE THIS TO MATCH THE YML FILE OF THE CORRESPONDING EXPERIMENT!!!
+# YMLS are in configs/jk_experiments (:
+experiment_name = "agw-R101-ibn"
 
 def main(args):
     cfg = setup(args)
-
     if args.eval_only:
         cfg.defrost()
         cfg.MODEL.BACKBONE.PRETRAIN = False
         model = DefaultTrainer.build_model(cfg)
         
-        Checkpointer(model).load('logs/AIC24/mgn_R101_reprod/model_best.pth')  # load trained model
+        Checkpointer(model).load(f'logs/jk_experiments/{experiment_name}/model_best.pth')  # load trained model
         model.training=False
         model.eval()
         
-        torch.save(model, '../ckpt_weight/aic24.pkl')  
+        torch.save(model, f'../ckpt_weight/{experiment_name}.pkl')  
         return None
 
 if __name__ == "__main__":
     args = default_argument_parser().parse_args()
     args.eval_only=True
-    args.config_file = 'configs/AIC24/mgn_R101_reprod.yml'
+    args.config_file = f'configs/jk_experiments/{experiment_name}.yml'
     print("Command Line Args:", args)
     launch(
         main,

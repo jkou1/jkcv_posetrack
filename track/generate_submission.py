@@ -24,6 +24,3 @@ for s in tqdm(scenes):
 results = np.concatenate(files,axis=0)
 
 np.savetxt(osp.join(save_dir,"track.txt"), results, fmt="%d %d %d %d %d %d %d %f %f")
-
-
-

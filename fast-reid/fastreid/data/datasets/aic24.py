@@ -42,14 +42,14 @@ class AIC24(ImageDataset):
             infos=img_name.split('_')
             pid,camid=int(infos[0]),int(infos[2][1:])
             train.append((img_path, pid, camid))
-        img_paths=glob.glob(root_path+"/"+"reid_data/AIC23_crop/*.jpg")
+        img_paths=glob.glob(root_path+"/"+"reid_data/challenge_train/*.jpg")
         for img_path in img_paths:
             img_name=img_path.split('/')[-1]
             infos=img_name.split('_')
             pid,camid=int(infos[0]),int(infos[1][1:])
             train.append((img_path, pid+8000, camid))
 
-        img_paths=glob.glob(root_path+"/"+"reid_data/AIC24_crop/*/*.jpg")
+        img_paths=glob.glob(root_path+"/"+"reid_data/train_crop/*/*.jpg")
         gallery_id=set()
         for img_path in img_paths:
             scene,img=img_path.split('/')[-2],img_path.split('/')[-1]

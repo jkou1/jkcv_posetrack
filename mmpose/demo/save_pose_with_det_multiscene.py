@@ -149,10 +149,13 @@ def main():
 
     current_file_path = os.path.abspath(__file__)
     path_arr = current_file_path.split('/')[:-3]
-    root_path = '/'.join(path_arr)
+    # root_path = '/'.join(path_arr)
+    root_path = "/WAVE/users/unix/jkou/PoseTrack/"
     
     det_root = os.path.join(root_path,"result/detection")
     vid_root = os.path.join(root_path,"dataset/test")
+    print(det_root)
+    
     # Using the project space to write results, avoids disk quota issues
     if args.output_path:
         save_root = os.path.join(args.output_path, "result/pose")
@@ -160,8 +163,11 @@ def main():
         save_root = os.path.join(root_path, "result/pose")
 
     scenes = sorted(os.listdir(det_root))
+    print(scenes)
     scenes = [s for s in scenes if s[0]=="s"]
-    scenes = scenes[args.start:args.end]
+    print(scenes)
+    scenes = scenes[args.start-61:args.end-61]
+    print(scenes)
     for scene in tqdm(scenes):
         print(scene)
         det_dir = os.path.join(det_root, scene)
@@ -178,8 +184,12 @@ def main():
             det_path = os.path.join(det_dir,cam)+".txt"
             vid_path = os.path.join(vid_dir,cam)+"/video.mp4"
             save_path = os.path.join(save_dir,cam+".txt")
+
             if os.path.exists(save_path):
                 continue
+            else:
+                print("Path not found!")
+                
             det_annot = np.loadtxt(det_path,delimiter=",")
             #print(det_annot[0])
 

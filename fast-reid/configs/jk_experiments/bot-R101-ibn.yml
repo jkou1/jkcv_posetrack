@@ -1,0 +1,13 @@
+_BASE_: ../Base-bagtricks.yml
+
+MODEL:
+  BACKBONE:
+    DEPTH: 101x
+    WITH_IBN: True
+
+
+DATASETS:
+  NAMES: ("AIC24",)
+  TESTS: ("AIC24",)
+
+OUTPUT_DIR:  logs/jk_experiments/bot-R101-ibn

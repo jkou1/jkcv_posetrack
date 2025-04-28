@@ -2,11 +2,10 @@
 
 #SBATCH --job-name=run_track
 #SBATCH --output=run_track-%j.out 
-#SBATCH --partition=cond  
+#SBATCH --partition=cmp
 #SBATCH --nodes=1 
 #SBATCH --ntasks=1 
-#SBATCH --cpus-per-task=6
-#SBATCH --gres=gpu:volta:1
+#SBATCH --cpus-per-task=12
 #SBATCH --mem-per-cpu=50G
 #SBATCH --time=48:00:00 
 #SBATCH --mail-user=jkou@scu.edu

@@ -28,7 +28,7 @@ class reid_inferencer():
         self.reid = reid
         self.mean =torch.Tensor([0.485, 0.456, 0.406]).view(3,1,1)
         self.std = torch.Tensor([0.229, 0.224, 0.225]).view(3,1,1)
-        self.device=self.reid.device
+        self.device = next(self.reid.parameters()).device
     def mgn(self,crops):
         features = self.reid.backbone(crops)  # (bs, 2048, 16, 8)
         b1_feat = self.reid.b1(features)
@@ -123,10 +123,25 @@ def main():
     print("The current length of scenes is " + str(len(scenes)))
     # scenes = scenes[args.start:args.end]
 
-    reid=torch.load('../ckpt_weight/aic24.pkl',map_location='cpu').cuda().eval()
-    reid_model = reid_inferencer(reid)
+    # reid=torch.load('/WAVE/users/unix/jkou/PoseTrack/ckpt_weight/aic24.pkl',map_location='cpu').cuda().eval()
+    # reid_model = reid_inferencer(reid)
 
+    # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    # print(device)
+    # reid=torch.load('/WAVE/users/unix/jkou/PoseTrack/ckpt_weight/aic24.pkl',map_location='cpu').to(device).eval()
     
+
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    reid = torch.load('/WAVE/users/unix/jkou/PoseTrack/ckpt_weight/aic24.pkl', map_location='cpu')
+    reid = reid.to(device)
+
+    if torch.cuda.device_count() > 1:
+        print(f"Using {torch.cuda.device_count()} GPUs")
+        reid = torch.nn.DataParallel(reid)
+
+    reid = reid.eval()
+    reid_model = reid_inferencer(reid)
 
 
     for scene in tqdm(scenes):

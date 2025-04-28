@@ -3,3 +3,4 @@ dataset/
 output_files/
 result/
 torch2trt/
+fast-reid/fastreid/
