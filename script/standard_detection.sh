@@ -1,12 +1,12 @@
 #!/bin/bash 
 
-#SBATCH --job-name=jkcvdetection
-#SBATCH --output=jkcvdetection-%j.out 
-#SBATCH --partition=gpu
+#SBATCH --job-name=jkcvdet_reid_tester
+#SBATCH --output=jkcvdet_reid_tester-%j.out 
+#SBATCH --partition=condo
 #SBATCH --nodes=1 
 #SBATCH --ntasks=1 
 #SBATCH --cpus-per-task=6
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:ada:1
 #SBATCH --mem-per-cpu=50G
 #SBATCH --time=48:00:00 
 #SBATCH --mail-user=jkou@scu.edu
@@ -16,6 +16,7 @@
 
 
 module load Anaconda3
+module load GCC/12.3.0
 source ~/.bashrc
 conda activate aic24
 
@@ -30,15 +31,15 @@ trap cleanup EXIT
 set -x
 
 # 定义场景的起始和结束索引
-start=61
-end=61
-start_gpu=1
+start=41
+end=42
+start_gpu=0
 # gpu_nums_per_iter=2 # gpu_nums_per_iter >= 1
 # cpu_nums_per_item=6 #cpu_nums_per_item >= 1
-scene_per_iter=5   #scene_per_iter={1,2,5,10,15,30}
+scene_per_iter=2   #scene_per_iter={1,2,5,10,15,30}
 
 # 设置CUDA_VISIBLE_DEVICES环境变量以限制使用特定的GPU
-export CUDA_VISIBLE_DEVICES=$[$2]
+export CUDA_VISIBLE_DEVICES=0
 
 
 for ((j=0; j < ($end-$start+1) / $scene_per_iter; j++)); do

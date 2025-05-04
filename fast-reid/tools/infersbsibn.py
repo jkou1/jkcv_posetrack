@@ -18,6 +18,7 @@ from tqdm import tqdm
 from torchvision.ops import roi_align,nms
 from argparse import ArgumentParser
 
+
 current_file_path = os.path.abspath(__file__)
 path_arr = current_file_path.split('/')[:-3]
 root_path = '/'.join(path_arr)
@@ -28,12 +29,27 @@ class reid_inferencer():
         self.reid = reid
         self.mean =torch.Tensor([0.485, 0.456, 0.406]).view(3,1,1)
         self.std = torch.Tensor([0.229, 0.224, 0.225]).view(3,1,1)
-        self.device=self.reid.device
-
-    def model_fpass(self,crops):
+        self.device = next(self.reid.parameters()).device
+    def mgn(self,crops):
         features = self.reid.backbone(crops)  # (bs, 2048, 16, 8)
-        outputs = self.reid.heads(features)
-        return outputs
+        b1_feat = self.reid.b1(features)
+        b2_feat = self.reid.b2(features)
+        b21_feat, b22_feat = torch.chunk(b2_feat, 2, dim=2)
+        b3_feat = self.reid.b3(features)
+        b31_feat, b32_feat, b33_feat = torch.chunk(b3_feat, 3, dim=2)
+
+        b1_pool_feat = self.reid.b1_head(b1_feat)
+        b2_pool_feat = self.reid.b2_head(b2_feat)
+        b21_pool_feat = self.reid.b21_head(b21_feat)
+        b22_pool_feat = self.reid.b22_head(b22_feat)
+        b3_pool_feat = self.reid.b3_head(b3_feat)
+        b31_pool_feat = self.reid.b31_head(b31_feat)
+        b32_pool_feat = self.reid.b32_head(b32_feat)
+        b33_pool_feat = self.reid.b33_head(b33_feat)
+
+        pred_feat = torch.cat([b1_pool_feat, b2_pool_feat, b3_pool_feat, b21_pool_feat,
+                                b22_pool_feat, b31_pool_feat, b32_pool_feat, b33_pool_feat], dim=1)
+        return pred_feat
     
     def process_frame(self,frame,bboxes):
         frame=torch.from_numpy(frame[:,:,::-1].copy()).permute(2,0,1)
@@ -54,7 +70,7 @@ class reid_inferencer():
         #print(frame.dtype)
         #print(torch.cat([torch.zeros(len(cbboxes),1),torch.from_numpy(cbboxes)],1).dtype)
         newcrops=roi_align(frame,torch.cat([torch.zeros(len(cbboxes),1),torch.from_numpy(cbboxes)],1),(384,128)).to(self.device)
-        newfeats=(self.model_fpass(newcrops)+self.model_fpass(newcrops.flip(3))).detach().cpu().numpy()/2
+        newfeats=(self.mgn(newcrops)+self.mgn(newcrops.flip(3))).detach().cpu().numpy()/2
 
         return newfeats
 
@@ -73,7 +89,7 @@ class reid_inferencer():
         #print(frame.dtype)
         #print(torch.cat([torch.zeros(len(cbboxes),1),torch.from_numpy(cbboxes)],1).dtype)
         newcrops=roi_align(frame,torch.cat([torch.zeros(len(cbboxes),1),torch.from_numpy(cbboxes)],1),(384,128)).to(self.device)
-        newfeats=(self.model_fpass(newcrops)+self.model_fpass(newcrops.flip(3))).detach().cpu().numpy()/2
+        newfeats=(self.mgn(newcrops)+self.mgn(newcrops.flip(3))).detach().cpu().numpy()/2
 
         return newfeats
 
@@ -93,30 +109,47 @@ def main():
 
 
     det_root = os.path.join(root_path,"result/detection")
-    print("det root is ", det_root)
     vid_root = os.path.join(root_path,"dataset/test")
     # Specifying the output path from user input at runtime
     if args.output_path:
         save_root = os.path.join(args.output_path, "result/reidsbs-ibn")
     else:
         save_root = os.path.join(root_path, "result/reidsbs-ibn")
+
+
     
     scenes = sorted(os.listdir(det_root))
+    print("The current length of scenes is " + str(len(scenes)))
     scenes = [s for s in scenes if s[0]=="s"]
+    print("The current length of scenes is " + str(len(scenes)))
     scenes = scenes[args.start-61:args.end-61]
-    print(scenes)
 
-    reid=torch.load('../ckpt_weight/sbs-aic24.pkl',map_location='cpu').cuda().eval()
-    print("loaded the weights correctly")
+    # reid=torch.load('/WAVE/users/unix/jkou/PoseTrack/ckpt_weight/aic24.pkl',map_location='cpu').cuda().eval()
+    # reid_model = reid_inferencer(reid)
+
+    # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    # print(device)
+    # reid=torch.load('/WAVE/users/unix/jkou/PoseTrack/ckpt_weight/aic24.pkl',map_location='cpu').to(device).eval()
+    
+
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    reid = torch.load('/WAVE/users2/unix/ivanderlinden/posetrack_clean/PoseTrack/ckpt_weight/agw-aic24.pkl', map_location='cpu')
+    reid = reid.to(device)
+
+    if torch.cuda.device_count() > 1:
+        print(f"Using {torch.cuda.device_count()} GPUs")
+        reid = torch.nn.DataParallel(reid)
+
+    reid = reid.eval()
     reid_model = reid_inferencer(reid)
 
-    print(scenes)
+
     for scene in tqdm(scenes):
         print(scene)
         det_dir = os.path.join(det_root, scene)
         vid_dir = os.path.join(vid_root, scene)
         save_dir = os.path.join(save_root, scene)
-        print("save dir is ", save_dir)
         cams = os.listdir(vid_dir)
         cams = sorted([c for c in cams if c[0]=="c"])
 
@@ -146,7 +179,7 @@ def main():
             det_len = len(det_annot)
 
             for frame_id, frame in enumerate(tqdm(video)):
-                #print(frame_id)
+                print(frame_id)
                 dets = det_annot[det_annot[:,0]==frame_id]
                 # num_det=0
                 # while det_annot[line_idx,0]<frame_id:

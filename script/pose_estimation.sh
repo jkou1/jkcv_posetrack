@@ -29,8 +29,8 @@ cd mmpose
 
 set -x
 
-start=85
-end=90
+start=41
+end=42
 start_gpu=0
 gpu_nums_per_iter=1 # gpu_nums_per_iter >= 1
 cpu_nums_per_item=6 #cpu_nums_per_item >= 1

@@ -2,11 +2,11 @@
 
 #SBATCH --job-name=reid83-90
 #SBATCH --output=reid_infer-%j.out 
-#SBATCH --partition=condo
+#SBATCH --partition=gpu
 #SBATCH --nodes=1 
 #SBATCH --ntasks=1 
 #SBATCH --cpus-per-task=6
-#SBATCH --gres=gpu:ada:1
+#SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=20G
 #SBATCH --time=48:00:00 
 #SBATCH --mail-user=jkou@scu.edu
@@ -15,7 +15,7 @@
 #!/usr/bin/env bash
 
 module load Anaconda3
-module load GCC/11.3.0
+module load GCC/12.3.0
 source ~/.bashrc
 conda activate aic24
 
@@ -31,12 +31,12 @@ trap cleanup EXIT
 cd fast-reid
 set -x
 
-start=83
+start=82
 end=90
 start_gpu=0
 gpu_nums_per_iter=1 # gpu_nums_per_iter >= 1
 cpu_nums_per_item=6 #cpu_nums_per_item >= 1
-scene_per_iter=30   #scene_per_iter={1,2,5,10,15,30}
+scene_per_iter=2   #scene_per_iter={1,2,5,10,15,30}
 
 
 for ((j=0; j < ($end-$start+1) / $scene_per_iter; j++)); do

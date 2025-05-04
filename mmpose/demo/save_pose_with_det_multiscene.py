@@ -153,7 +153,8 @@ def main():
     root_path = "/WAVE/users/unix/jkou/PoseTrack/"
     
     det_root = os.path.join(root_path,"result/detection")
-    vid_root = os.path.join(root_path,"dataset/test")
+    # change to dataset/validation, or dataset/test according to what you are testing
+    vid_root = os.path.join(root_path,"dataset/val")
     print(det_root)
     
     # Using the project space to write results, avoids disk quota issues
@@ -174,6 +175,11 @@ def main():
         vid_dir = os.path.join(vid_root, scene)
         save_dir = os.path.join(save_root, scene)
         cams = os.listdir(vid_dir)
+
+        # this is new for validation
+        if cams and cams[-1].endswith(".txt"):
+            cams.pop()
+            print("Here are our cameras: ", cams)
         cams = sorted([c for c in cams if c[0]=="c"])
         
         if not os.path.exists(save_dir):

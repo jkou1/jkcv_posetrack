@@ -37,8 +37,8 @@ def main():
     
     cams = sorted(os.listdir(cal_dir))
     # undo this line for regular test set
-    del cams[-1]
-    print(cams)
+    # del cams[-1]
+    # print(cams)
 
     cals = []
     for cam in cams:

@@ -97,16 +97,15 @@ def main():
     vid_root = os.path.join(root_path,"dataset/test")
     # Specifying the output path from user input at runtime
     if args.output_path:
-        save_root = os.path.join(args.output_path, "result/reidsbs-ibn")
+        save_root = os.path.join(args.output_path, "result/reidbot")
     else:
-        save_root = os.path.join(root_path, "result/reidsbs-ibn")
+        save_root = os.path.join(root_path, "result/reidbot")
     
     scenes = sorted(os.listdir(det_root))
     scenes = [s for s in scenes if s[0]=="s"]
     scenes = scenes[args.start-61:args.end-61]
-    print(scenes)
 
-    reid=torch.load('../ckpt_weight/sbs-aic24.pkl',map_location='cpu').cuda().eval()
+    reid=torch.load('../ckpt_weight/bot-aic24.pkl',map_location='cpu').cuda().eval()
     print("loaded the weights correctly")
     reid_model = reid_inferencer(reid)
 

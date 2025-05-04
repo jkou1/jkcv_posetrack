@@ -179,7 +179,7 @@ def image_demo(predictor, vis_folder, current_time, args,scene):
     current_file_path = os.path.abspath(__file__)
     path_arr = current_file_path.split('/')[:-2]
     root_path = '/'.join(path_arr)
-    input = osp.join(root_path,'dataset/test','scene_0'+"{:02d}".format(scene))
+    input = osp.join(root_path,'dataset/val','scene_0'+"{:02d}".format(scene))
 
     # Use specified output path if provided, otherwise use the default
     if args.output_path:
@@ -190,14 +190,24 @@ def image_demo(predictor, vis_folder, current_time, args,scene):
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
+    
+
     cameras = sorted(os.listdir(input))
+
+    print("We currently have", len(cameras), " cameras ")
+
     # Check if the last element is a text file and remove it, if using val set to test
-    # if cameras and cameras[-1].endswith('.txt') and os.path.isfile(os.path.join(input, cameras[-1])):
-    #     cameras.pop()
+    if cameras and cameras[-1].endswith('.txt') and os.path.isfile(os.path.join(input, cameras[-1])):
+        cameras.pop()
 
      # **Check if results already exist and remove those cameras**
-    cameras = [cam for cam in cameras if not os.path.exists(osp.join(out_path, cam + '.txt'))]
+    for cam in cameras:
+        print(str(osp.join(out_path, cam + '.txt')))
+    # MAKE SURE TO UNCOMMENT THIS LINE WHEN RUNNING TEST SET
+    # cameras = [cam for cam in cameras if not os.path.exists(osp.join(out_path, cam + '.txt'))]
 
+    print("We currently have", len(cameras), " cameras ")
+    
     # If all cameras were removed, skip processing
     if not cameras:
         logger.info("All cameras already processed. Skipping image_demo.")
